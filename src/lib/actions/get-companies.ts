@@ -1,4 +1,4 @@
-import { COMPANY_STATUS, WOJEWODZTWA, lock, PropertyList, ApiResult, handleResponse  } from '../../utils/';
+import { COMPANY_STATUS, WOJEWODZTWA, lock, PropertyList, ApiResult, handleResponse, mapPropsToQueryString  } from '../../utils/';
 import { HttpMethod, propsValidation } from '@activepieces/pieces-common';
 import { ceidgAuth } from '../..';
 import { createAction, Property, } from '@activepieces/pieces-framework';
@@ -66,8 +66,7 @@ export const getCompanies = createAction({
   async run(context): Promise<ApiResult> {
     const startTime = performance.now(),
       propsValue = context.propsValue,
-      auth = context.auth,
-      params = new URLSearchParams();
+      auth = context.auth;
 
     await propsValidation.validateZod(propsValue, {
       nip: z.array(nipSchema),
@@ -75,16 +74,7 @@ export const getCompanies = createAction({
       // TODO validate other properties
     });
 
-    for (const key in propsValue) { 
-      const value = (propsValue as Record<string, number | string | string[]>)[key];
-      if (Array.isArray(value)) { 
-        value.forEach((item) => params.append(key, item))
-      } else {
-        params.append(key, `${value}`)
-      }
-    }
-
-    const queryString = params.toString();
+    const queryString = mapPropsToQueryString(propsValue);
     const url = `${auth.url}/firmy${queryString.length ? '?' + queryString : ''}`;
 
     await lock(context);

@@ -1,4 +1,4 @@
-import { ActionContext, Property } from "@activepieces/pieces-framework";
+import { ActionContext, Property, StaticPropsValue } from "@activepieces/pieces-framework";
 import { Lock } from "./lock";
 import { HttpStatusCode } from "axios";
 import { ApiResult } from "./interfaces";
@@ -73,4 +73,19 @@ export async function handleResponse(res: Response, startTime: number): Promise<
     throw new Error(
       `Request failed with status: ${statusName} - ${statusCode}`
     );
+}
+
+export function mapPropsToQueryString<T>(propsValue: T) {
+    const params = new URLSearchParams();
+
+    for (const key in propsValue) { 
+      const value = (propsValue as Record<string, number | string | string[]>)[key];
+      if (Array.isArray(value)) { 
+        value.forEach((item) => params.append(key, item))
+      } else {
+        params.append(key, `${value}`)
+      }
+    }
+
+    return params.toString();
 }

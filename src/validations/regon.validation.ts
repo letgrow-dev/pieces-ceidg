@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export function isValidREGON(regon: string): boolean {
-  if (typeof regon !== "string") {
-    return false;
-  }
+  if (regon === "") return true;
+  if (typeof regon !== "string") return false;
 
   const regonLength = regon.length;
 

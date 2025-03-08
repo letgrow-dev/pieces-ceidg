@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export function isValidNIP (nip: string) : boolean {
-  if (typeof nip !== "string" || nip.length !== 10) {
-    return false;
-  }
+  if (nip === "") return true;
+  if (typeof nip !== "string" || nip.length !== 10) return false;
 
   const weights = [6, 5, 7, 2, 3, 4, 5, 6, 7];
   let sum = 0;
