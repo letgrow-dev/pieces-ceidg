@@ -1,6 +1,7 @@
 import { createPiece, PieceAuth, Property } from "@activepieces/pieces-framework";
 import { createCustomApiCallAction } from '@activepieces/pieces-common';
 import { getCompanies } from "./lib/actions";
+import { companyByUuid } from "./lib/actions/company-by-uuid";
 
 const TEST_API = "https://test-dane.biznes.gov.pl/api/ceidg/v2";
 const PROD_API = "https://dane.biznes.gov.pl/api/ceidg/v2";
@@ -33,6 +34,7 @@ export const ceidg = createPiece({
   authors: ["Marcin Zawada"],
   actions: [
     getCompanies,
+    companyByUuid,
     createCustomApiCallAction({
       baseUrl: (auth: unknown) => {
         if (auth && typeof auth === 'object' && 'url' in auth && typeof auth?.url === 'string') {

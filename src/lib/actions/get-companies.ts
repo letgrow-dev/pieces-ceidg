@@ -1,22 +1,9 @@
-import {
-  createAction,
-  Property,
-} from '@activepieces/pieces-framework';
+import { COMPANY_STATUS, WOJEWODZTWA, lock, PropertyList, ApiResult, handleResponse  } from '../../utils/';
 import { HttpMethod, propsValidation } from '@activepieces/pieces-common';
-import { HttpStatusCode } from 'axios';
 import { ceidgAuth } from '../..';
+import { createAction, Property, } from '@activepieces/pieces-framework';
 import { nipSchema, regonSchema } from '../../validations';
 import { z } from 'zod';
-import { COMPANY_STATUS, WOJEWODZTWA } from '../../utils/consts';
-import { lock, PropertyList } from '../../utils/helpers';
-
-interface GetCompaniesResult {
-  statusName: string;
-  statusCode: HttpStatusCode | string;
-  content: unknown;
-  message?: string;
-  elapsedTime: number;
-}
 
 export const getCompanies = createAction({
   name: 'getCompanies',
@@ -76,8 +63,8 @@ export const getCompanies = createAction({
       }
     })
   },
-  async run(context): Promise<GetCompaniesResult> {
-    const start = performance.now(),
+  async run(context): Promise<ApiResult> {
+    const startTime = performance.now(),
       propsValue = context.propsValue,
       auth = context.auth,
       params = new URLSearchParams();
@@ -85,6 +72,7 @@ export const getCompanies = createAction({
     await propsValidation.validateZod(propsValue, {
       nip: z.array(nipSchema),
       regon: z.array(regonSchema),
+      // TODO validate other properties
     });
 
     for (const key in propsValue) { 
@@ -109,42 +97,6 @@ export const getCompanies = createAction({
       },
     });
 
-    const status = Object.entries(HttpStatusCode).find(
-      (entry) => entry[1] === res.status
-    );
-    const [statusName, statusCode] = status || ['Unknown', 0];
-
-    if (statusCode === HttpStatusCode.Ok) {
-      if (res.headers.get('content-type')?.includes('application/json')) {
-        return {
-          content: await res.json(),
-          elapsedTime: performance.now() - start,
-          message: 'Ok',
-          statusCode,
-          statusName,
-        };
-      } else {
-        const msg = [
-          'Invalid content type',
-          `Expected "application/json", got "${res.headers.get('content-type')}`,
-          'Please ensure the API is functioning correctly and there is no ongoing maintenance',
-          'You can check it here: https://dane.biznes.gov.pl',
-        ];
-
-        throw new Error(msg.join('. '));
-      }
-    } else if (statusCode === HttpStatusCode.NoContent) {
-      return {
-        content: null,
-        elapsedTime: performance.now() - start,
-        message: 'No matching companies found',
-        statusCode,
-        statusName,
-      };
-    }
-
-    throw new Error(
-      `Request failed with status: ${statusName} - ${statusCode}`
-    );
+    return handleResponse(res, startTime)
   },
 });
