@@ -1,13 +1,18 @@
 {
   "name": "@letgrow/pieces-ceidg",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/letgrow-dev/pieces-ceidg.git"
+  },
   "scripts": {
     "test": "jest"
   },
   "devDependencies": {
-    "@activepieces/pieces-framework": "^0.7.44",
-    "@babel/preset-typescript": "^7.26.0",
-    "@types/jest": "^29.5.14",
-    "jest": "29.7.0"
+    "@activepieces/pieces-framework": "0.7.44",
+    "@babel/preset-typescript": "7.26.0",
+    "@types/jest": "29.5.14",
+    "jest": "29.7.0",
+    "release-please": "16.18.0"
   }
 }
